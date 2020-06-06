@@ -76,8 +76,8 @@ https://leetcode-cn.com/problems/smallest-integer-divisible-by-k/description/
 # @lc code=start
 
 
-class Solution:
-    def smallestRepunitDivByK(self, K: int) -> int:
+class Solution(object):
+    def smallestRepunitDivByK(self, K):
         if K % 10 in [2, 4, 5, 6, 8]:
             return - 1
         seen = set()
@@ -87,7 +87,7 @@ class Solution:
             if mod in seen:
                 return -1
             if mod == 0:
-                return ix
+                return i
             seen.add(mod)
 
         # @lc code=end
@@ -98,7 +98,7 @@ JAVA
 class Solution {
     public int smallestRepunitDivByK(int K) {
         int mod=0;
-        int ans=10000;
+        int ans=0;
         if ((K%10==2)||(K%10==4)||(K%10==6)||(K%10==8)){
             ans=-1;
         }
@@ -120,7 +120,23 @@ class Solution {
     }
 }
 注意JAVA中if并列条件的书写格式，MAP的定义方式，查找MAP中是否有值，向MAP中添加值，注意循环中的限制条件；寻找特殊数字的整除余数循环规律 mod=(mod*10+1)%K
+JAVA法二：
+class Solution {
+public static int smallestRepunitDivByK(int K) {
+    if (K % 2 == 0 || K % 5 == 0) {
+        return -1;
+    }
+    int temp = 1;
+    int len = 1;
+    while (temp % K != 0) {
+        temp = temp % K;
+        temp = temp * 10 + 1;
+        len += 1;
+    }
+    return len;
+}
 
+}
 ## 相关题目
 
 - [166. 分数到小数](https://leetcode-cn.com/problems/fraction-to-recurring-decimal/)
