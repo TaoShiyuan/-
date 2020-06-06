@@ -174,7 +174,7 @@ class Solution {
     while(low<high){
         int mid=(int)Math.floor((low+high)/2);
         if (canship(mid,weights,D)){
-            high=mid;
+            high=mid-1;//减不减1都行
         }
         else{
             low=mid+1;
