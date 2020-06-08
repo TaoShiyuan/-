@@ -1,0 +1,299 @@
+题目地址
+https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/description/
+
+题目描述
+和leetcode 102 基本是一样的，思路是完全一样的。
+
+Given a binary tree, return the zigzag level order traversal of its nodes' values. (ie, from left to right, then right to left for the next level and alternate between).
+
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its zigzag level order traversal as:
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+思路
+这道题可以借助队列实现，首先把root入队，然后入队一个特殊元素Null(来表示每层的结束)。
+
+然后就是while(queue.length), 每次处理一个节点，都将其子节点（在这里是left和right）放到队列中。
+
+然后不断的出队， 如果出队的是null，则表式这一层已经结束了，我们就继续push一个null。
+
+关键点解析
+队列
+
+队列中用Null(一个特殊元素)来划分每层
+
+树的基本操作- 遍历 - 层次遍历（BFS）
+
+代码
+语言支持：JS，C++
+JavaScript Code：
+
+/*
+ * @lc app=leetcode id=103 lang=javascript
+ *
+ * [103] Binary Tree Zigzag Level Order Traversal
+ *
+ * https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/description/
+ *
+ * algorithms
+ * Medium (40.57%)
+ * Total Accepted:    201.2K
+ * Total Submissions: 493.7K
+ * Testcase Example:  '[3,9,20,null,null,15,7]'
+ *
+ * Given a binary tree, return the zigzag level order traversal of its nodes'
+ * values. (ie, from left to right, then right to left for the next level and
+ * alternate between).
+ * 
+ * 
+ * For example:
+ * Given binary tree [3,9,20,null,null,15,7],
+ * 
+ * ⁠   3
+ * ⁠  / \
+ * ⁠ 9  20
+ * ⁠   /  \
+ * ⁠  15   7
+ * 
+ * 
+ * 
+ * return its zigzag level order traversal as:
+ * 
+ * [
+ * ⁠ [3],
+ * ⁠ [20,9],
+ * ⁠ [15,7]
+ * ]
+ * 
+ * 
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+var zigzagLevelOrder = function(root) {
+  if (!root) return [];   
+  const items = [];
+  let isOdd = true;
+  let levelNodes = [];
+  
+  const queue = [root, null];
+
+
+  while(queue.length > 0) {
+      const t = queue.shift();
+
+      if (t) {
+          levelNodes.push(t.val)
+          if (t.left) {
+            queue.push(t.left)
+          }
+          if (t.right) {
+            queue.push(t.right)
+          }
+      } else {
+        if (!isOdd) {
+          levelNodes = levelNodes.reverse();
+        }
+        items.push(levelNodes)
+        levelNodes = [];
+        isOdd = !isOdd;
+        if (queue.length > 0) {
+            queue.push(null);
+        }
+      }
+  }
+
+  return items
+    
+};
+C++ Code：
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        auto ret = vector<vector<int>>();
+        if (root == nullptr) return ret;
+        auto queue = vector<const TreeNode*>{root};
+        auto isOdd = true;
+        while (!queue.empty()) {
+            auto sz = queue.size();
+            auto level = vector<int>();
+            for (auto i = 0; i < sz; ++i) {
+                auto n = queue.front();
+                queue.erase(queue.begin());
+                if (isOdd) level.push_back(n->val);
+                else level.insert(level.begin(), n->val);
+                if (n->left != nullptr) queue.push_back(n->left);
+                if (n->right != nullptr) queue.push_back(n->right);
+            }
+            isOdd = !isOdd;
+            ret.push_back(level);
+        }
+        return ret;
+    }
+};
+拓展
+由于二叉树是递归结构，因此，可以采用递归的方式来处理。在递归时需要保留当前的层次信息（从0开始），作为参数传递给下一次递归调用。
+
+描述
+当前层次为偶数时，将当前节点放到当前层的结果数组尾部
+当前层次为奇数时，将当前节点放到当前层的结果数组头部
+递归对左子树进行之字形遍历，层数参数为当前层数+1
+递归对右子树进行之字形遍历，层数参数为当前层数+1
+C++实现
+class Solution {
+public:
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        auto ret = vector<vector<int>>();
+        zigzagLevelOrder(root, 0, ret);
+        return ret;
+    }
+private:
+    void zigzagLevelOrder(const TreeNode* root, int level, vector<vector<int>>& ret) {
+        if (root == nullptr || level < 0) return;
+        if (ret.size() <= level) {
+            ret.push_back(vector<int>());
+        }
+        if (level % 2 == 0) ret[level].push_back(root->val);
+        else ret[level].insert(ret[level].begin(), root->val);
+        zigzagLevelOrder(root->left, level + 1, ret);
+        zigzagLevelOrder(root->right, level + 1, ret);
+    }
+};
+JAVA:双端队列BFS
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> list=new ArrayList<>();
+        LinkedList<TreeNode> queue=new LinkedList<>();
+        if(root==null){
+            return new ArrayList<>();
+        }
+        queue.addLast(root);
+        int count=0;
+        while(queue.size()>0){
+            List<Integer> temp=new ArrayList<>();
+            int size=queue.size();
+            if(count%2==0){
+            for(int i=0;i<size;i++){
+            TreeNode a=queue.remove();
+            temp.add(a.val);
+
+            
+            if(a.left!=null){
+                queue.add(a.left);
+            }
+            if(a.right!=null){
+                queue.add(a.right);
+            }
+            }
+            count++;
+            }
+            else{
+            for(int i=0;i<size;i++){
+            TreeNode a=queue.removeLast();
+            temp.add(a.val);
+            if(a.right!=null){
+                queue.addFirst(a.right);
+            }
+            if(a.left!=null){
+                queue.addFirst(a.left);
+            }               
+            }
+            count++;
+            }
+            list.add(temp);
+        }
+
+        return list;
+    }
+}
+注意叶节点不能直接添加进list，需要先创建一个linkeslist类型的queue进行保存，由于是广度优先层次遍历，因此需要先将每一层的叶节点添加进queue，确定这一层
+的节点数后开始for循环remove出每一个队列端点，再在另一端添加入该节点的左右子树，当队列为空时跳出while；由于是之字形遍历，需要用到双端队列，每一层的
+删除添加顺序都与上下层不同，用每一层count++奇偶判断。
+JAVA:DFS双端队列
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> list=new ArrayList<>();
+        LinkedList<TreeNode> queue=new LinkedList<>();
+        if(root==null){
+            return new ArrayList<>();
+        }
+        dfs(1,root,list);
+        return list;
+    }
+    void dfs(int index,TreeNode root, List<List<Integer>> list){
+        if(list.size()<index){
+            list.add(new ArrayList<>());
+        }
+        if(index%2!=0){
+        list.get(index-1).add(root.val);
+        }
+        else{
+        list.get(index-1).add(0,root.val);
+        }        
+       
+        if(root.left!=null){
+            dfs(index+1,root.left,list);
+        }
+        if(root.right!=null){
+            dfs(index+1,root.right,list);
+        }        
+    } 
+        
+}
+将树排列成田字格，设置index深度与结果中的队列数相比较，若小于则添加新的队列，用奇偶判断层数，再往其队头或者队尾加值；使用list.get(index-1).add(root.val)在该层添加值，
+再按照深度优先遍历从左到右遍历每一个节点，到每一层就要将值添加进对应队列。
+
+总结BFS和DFS：
+BFS需要一个额外的队列来储存每一层的值，并且不断地将下一层的节点数依次加入，也就是每出队一个节点就要将其子节点加入队列尾端，将本层
+节点for循环加入结果队列，当上一层最后一个节点出队后，队列中仍存在的节点数就是本层全部节点数，继续for循环和出队首节点加入下层子节点。
+DFS属于迭代，因此写一个函数每一层的节点进行调用，需要设置Index来判断当前迭代到第几层，按照树的从左到右顺序加入结果队列中相应层数的队列中，
+在每一层的index中，根据情况判断加入队首或者队尾节点。
+
+相关题目
+102.binary-tree-level-order-traversal
+104.maximum-depth-of-binary-tree
