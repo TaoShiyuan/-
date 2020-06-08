@@ -97,29 +97,31 @@ class Solution(object):
 JAVA
 class Solution {
     public int smallestRepunitDivByK(int K) {
-        int mod=0;
+        int mod=1,mod1=0;
         int ans=0;
-        if ((K%10==2)||(K%10==4)||(K%10==6)||(K%10==8)){
+        if ((K%10==2)||(K%10==4)||(K%10==6)||(K%10==8)||(K%10==5)||(K%10==0)){
             ans=-1;
         }
        
         else{
             Map<Integer,Integer> map=new HashMap<Integer,Integer>();
             for(int i=1;i<K+1;i++){
-            mod=(mod*10+1)%K;
+            mod=mod%K;
             if (mod==0){
                 ans=i;
+                break;
             }
-            else if(map.values().contains(mod)){
+            else if(map.containsKey(mod)){
                 ans=-1;
             }
             map.put(i,mod);
+            mod=mod*10+1;
         }
     }
     return ans;
     }
 }
-注意JAVA中if并列条件的书写格式，MAP的定义方式，查找MAP中是否有值，向MAP中添加值，注意循环中的限制条件；寻找特殊数字的整除余数循环规律 mod=(mod*10+1)%K
+注意JAVA中if并列条件的书写格式，MAP的定义方式，查找MAP中是否有值，向MAP中添加值，注意循环中的限制条件；break的条件;寻找特殊数字的整除余数循环规律 mod=(mod*10+1)%K
 JAVA法二：
 class Solution {
 public static int smallestRepunitDivByK(int K) {
