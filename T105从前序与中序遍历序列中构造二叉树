@@ -199,6 +199,7 @@ class Solution {
                 stack.push(node.left);
             } else {
                 while (!stack.isEmpty() && stack.peek().val == inorder[inorderIndex]) {
+                //这里是stack.peek().val而不是node.val因为pop()是取栈顶的值并且将这个值从栈中取出，而比较时要舍去栈顶值比较下一个值                
                     node = stack.pop();
                     inorderIndex++;
                 }
